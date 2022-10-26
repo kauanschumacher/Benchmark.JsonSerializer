@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9435F571-0DE4-4588-B2D5-0CCD302A1D58}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmark.JsonSerializers", "src\Benchmark.JsonSerializers\Benchmark.JsonSerializers.csproj", "{E90D7476-AD64-4C4B-B350-81A4F9BC5F2C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E90D7476-AD64-4C4B-B350-81A4F9BC5F2C} = {9435F571-0DE4-4588-B2D5-0CCD302A1D58}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E90D7476-AD64-4C4B-B350-81A4F9BC5F2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E90D7476-AD64-4C4B-B350-81A4F9BC5F2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E90D7476-AD64-4C4B-B350-81A4F9BC5F2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E90D7476-AD64-4C4B-B350-81A4F9BC5F2C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
