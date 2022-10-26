@@ -5,67 +5,81 @@ using BenchmarkDotNet.Attributes;
 
 namespace Benchmark.JsonSerializers;
 
+[MemoryDiagnoser(false)]
 public class JsonSerializerBenchmark
 {
-    private static readonly SystemTextJsonClasses.IEvent Native_SimpleEvent = new SystemTextJsonClasses.SimpleEvent(); 
-    private static readonly SystemTextJsonClasses.IEvent Native_ComplexEvent = new SystemTextJsonClasses.ComplexEvent(); 
-    private static readonly CustomSerializerClasses.IEvent Custom_SimpleEvent = new CustomSerializerClasses.SimpleEvent(); 
-    private static readonly CustomSerializerClasses.IEvent Custom_ComplexEvent = new CustomSerializerClasses.ComplexEvent(); 
+    private static readonly SystemTextJsonClasses.IEvent Native_SomeEvent = new SystemTextJsonClasses.SomeEvent(); 
+    private static readonly CustomSerializerClasses.IEvent Custom_AnotherEvent = new CustomSerializerClasses.AnotherEvent(); 
     
     private static readonly JsonSerializerOptions Custom_Options = new()
     {
         Converters = { new EventJsonConverter() }
     }; 
-
-    [Benchmark]
-    public string SystemTextJson_SimpleEvent()
+    
+    private static readonly JsonSerializerOptions DerivedType_Options = new()
     {
-        return JsonSerializer.Serialize(Native_SimpleEvent, typeof(SystemTextJsonClasses.IEvent));
+        Converters = { new DerivedTypeJsonConverter<CustomSerializerClasses.IEvent>() }
+    }; 
+    
+    [Benchmark]
+    public CustomSerializerClasses.IEvent? CustomSerializer_Deserialize()
+    {
+        return JsonSerializer.Deserialize<CustomSerializerClasses.IEvent>("""{"Id":"00000000-0000-0000-0000-000000000000","SomeData":{"SomeString":null,"MoreOneString":null},"$type":"Benchmark.JsonSerializers.Classes.ComplexEvent"}""", new JsonSerializerOptions()
+        {
+            Converters = { new EventJsonConverter() }
+        });
     }
     
     [Benchmark]
-    public string CustomSerializer_SimpleEvent()
+    public CustomSerializerClasses.IEvent? DerivedTypeSerializer_Deserialize()
     {
-        return JsonSerializer.Serialize(Custom_SimpleEvent, typeof(CustomSerializerClasses.IEvent), Custom_Options);
+        return JsonSerializer.Deserialize<CustomSerializerClasses.IEvent>("""{"Id":"00000000-0000-0000-0000-000000000000","SomeData":{"SomeString":null,"MoreOneString":null},"$type":"Benchmark.JsonSerializers.Classes.ComplexEvent"}""", new JsonSerializerOptions()
+        {
+            Converters = { new DerivedTypeJsonConverter<CustomSerializerClasses.IEvent>() }
+        });
+    }
+    [Benchmark]
+    public SystemTextJsonClasses.IEvent? SystemTextJson_Deserialize()
+    {
+        return JsonSerializer.Deserialize<SystemTextJsonClasses.IEvent>("""{"$type":"ComplexEvent","Id":"00000000-0000-0000-0000-000000000000","SomeData":{"SomeString":null,"MoreOneString":null}}""");
     }
     
     [Benchmark]
-    public async Task SystemTextJson_SimpleEvent_Async()
+    public string SystemTextJson_Serialize()
+    {
+        return JsonSerializer.Serialize(Native_SomeEvent, typeof(SystemTextJsonClasses.IEvent));
+    }
+    
+    [Benchmark]
+    public string CustomSerializer_Serialize()
+    {
+        return JsonSerializer.Serialize(Custom_AnotherEvent, typeof(CustomSerializerClasses.IEvent), Custom_Options);
+    }
+    
+    [Benchmark]
+    public string DerivedTypeSerializer_Serialize()
+    {
+        return JsonSerializer.Serialize(Custom_AnotherEvent, typeof(CustomSerializerClasses.IEvent), DerivedType_Options);
+    }
+    
+    [Benchmark]
+    public async Task SystemTextJson_Serialize_Async()
     {
         await using var ms = new MemoryStream();
-        await JsonSerializer.SerializeAsync(ms, Native_SimpleEvent, typeof(SystemTextJsonClasses.IEvent));
+        await JsonSerializer.SerializeAsync(ms, Native_SomeEvent, typeof(SystemTextJsonClasses.IEvent));
     }
     
     [Benchmark]
-    public async Task CustomSerializer_SimpleEvent_Async()
+    public async Task CustomSerializer_Serialize_Async()
     {
         await using var ms = new MemoryStream();
-        await JsonSerializer.SerializeAsync(ms, Custom_SimpleEvent, typeof(CustomSerializerClasses.IEvent), Custom_Options);
+        await JsonSerializer.SerializeAsync(ms, Custom_AnotherEvent, typeof(CustomSerializerClasses.IEvent), Custom_Options);
     }
     
     [Benchmark]
-    public string SystemTextJson_ComplexEvent()
-    {
-        return JsonSerializer.Serialize(Native_ComplexEvent, typeof(SystemTextJsonClasses.IEvent));
-    }
-    
-    [Benchmark]
-    public string CustomSerializer_ComplexEvent()
-    {
-        return JsonSerializer.Serialize(Custom_ComplexEvent, typeof(CustomSerializerClasses.IEvent), Custom_Options);
-    }
-    
-    [Benchmark]
-    public async Task SystemTextJson_ComplexEvent_Async()
+    public async Task DerivedTypeSerializer_Serialize_Async()
     {
         await using var ms = new MemoryStream();
-        await JsonSerializer.SerializeAsync(ms, Native_ComplexEvent, typeof(SystemTextJsonClasses.IEvent));
-    }
-    
-    [Benchmark]
-    public async Task CustomSerializer_ComplexEvent_Async()
-    {
-        await using var ms = new MemoryStream();
-        await JsonSerializer.SerializeAsync(ms, Custom_ComplexEvent, typeof(CustomSerializerClasses.IEvent), Custom_Options);
+        await JsonSerializer.SerializeAsync(ms, Custom_AnotherEvent, typeof(CustomSerializerClasses.IEvent), DerivedType_Options);
     }
 }

@@ -7,8 +7,13 @@ public static class JsonNodeExtensions
     public static JsonNode Clone(
         this JsonNode node, 
         IEnumerable<KeyValuePair<string, JsonNode?>>? prependProperties = null,
-        IEnumerable<KeyValuePair<string, JsonNode?>>? appendProperties = null) 
-        => new JsonObject(GetPropertiesWithAppendAndPrepend(node, prependProperties, appendProperties));
+        IEnumerable<KeyValuePair<string, JsonNode?>>? appendProperties = null) =>
+        node switch
+        {
+            JsonArray jsonArray => new JsonArray(GetProperties(jsonArray).ToArray()),
+            JsonObject jsonObject => new JsonObject(GetPropertiesWithAppendAndPrepend(jsonObject, prependProperties, appendProperties)),
+            _ => node
+        };
 
     private static IEnumerable<KeyValuePair<string, JsonNode?>> GetPropertiesWithAppendAndPrepend(JsonNode node, IEnumerable<KeyValuePair<string, JsonNode?>>? prependProperties, IEnumerable<KeyValuePair<string, JsonNode?>>? appendProperties)
     {
@@ -26,15 +31,15 @@ public static class JsonNodeExtensions
     private static JsonNode? GetPropertyValue(JsonNode? jsonNode) 
         => jsonNode switch
         {
-            JsonValue jsonValue => GetJsonValue(jsonValue),
+            JsonValue jsonValue => ParseJsonNode(jsonValue),
             JsonObject jsonObject => new JsonObject(GetProperties(jsonObject)),
             JsonArray jsonArray => new JsonArray(GetProperties(jsonArray).ToArray()),
             _ => null
         };
 
-    private static JsonNode GetJsonValue(JsonValue jsonValue) 
-        => jsonValue.Parent is not null 
-            ? JsonValue.Parse(jsonValue.ToJsonString()) 
+    private static JsonNode? ParseJsonNode(JsonNode? jsonValue) 
+        => jsonValue?.Parent is not null 
+            ? JsonNode.Parse(jsonValue.ToJsonString()) 
             : jsonValue;
 
     private static IDictionary<string, JsonNode?> GetProperties(JsonObject jsonObject)

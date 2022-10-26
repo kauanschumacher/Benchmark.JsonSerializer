@@ -4,23 +4,13 @@ namespace Benchmark.JsonSerializers.Classes;
 
 public static class SystemTextJsonClasses
 {
-    [JsonDerivedType(typeof(SimpleEvent), nameof(SimpleEvent))]
-    [JsonDerivedType(typeof(ComplexEvent), nameof(ComplexEvent))]
+    [JsonDerivedType(typeof(SomeEvent), nameof(SomeEvent))]
     [JsonPolymorphic(UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FailSerialization)]
     public interface IEvent 
     {
     }
 
-    public class SimpleEvent : IEvent
-    {
-        public Guid Id { get; set; }
-        public string SomeString { get; set; }
-        public string MoreOneString { get; set; }
-        public decimal SomeDecimal { get; set; }
-        public long SomeLong { get; set; }
-    }
-
-    public class ComplexEvent : IEvent
+    public class SomeEvent : IEvent
     {
         public Guid Id { get; set; }
         public SomeDto SomeData { get; set; }

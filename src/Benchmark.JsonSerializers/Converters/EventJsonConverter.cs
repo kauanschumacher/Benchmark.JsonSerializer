@@ -49,11 +49,7 @@ public class EventJsonConverter : JsonConverter<CustomSerializerClasses.IEvent?>
 
         var type = value.GetType();
         if (!EventDiscriminatorByTypes.TryGetValue(type, out var discriminator)) throw new JsonException();
-
-        var nativeSerialization = JsonSerializer.SerializeToNode(value, type, options)!;
-        if (nativeSerialization is JsonArray) throw new JsonException();
-        
-        nativeSerialization
+        JsonSerializer.SerializeToNode(value, type, options)?
             .Clone(prependProperties: GetPrependProperties(discriminator))
             .WriteTo(writer, options);
     }
